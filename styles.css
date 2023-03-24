@@ -58,6 +58,20 @@ main .keys {
     background-color: #747474;
     color: #fff;
     border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.keys .key:hover {
+    filter: brightness(130%);
+    cursor: pointer;
+}
+
+.keys .key:active {
+    scale: 0.95;
+}
+
+.keys .key::selection {
+    background-color: transparent;
 }
 
 .keys .operator {
@@ -71,6 +85,6 @@ main .keys {
 
 .keys #sign,
 .keys #percent {
-    background-color: #bebebe;
+    background-color: #a9a9a9;
     color: #272727;
 }
