@@ -18,18 +18,6 @@ function divide(firstNumber, secondNumber) {
     }
 }
 
-function updatePrimaryDisplay(value) {
-    primaryDisplay.textContent = Number(value).toLocaleString('en-US');
-}
-
-function updateSecondaryDisplay(firstNumber, secondNumber, operator) {
-    if (secondNumber) {
-        secondaryDisplay.textContent = `${firstNumber}${operator}${secondNumber}=`;
-    } else {
-        secondaryDisplay.textContent = `${firstNumber}${operator}`;
-    }
-}
-
 function operate(firstNumber, secondNumber, operator) {
     switch (operator) {
         case '+':
@@ -40,6 +28,18 @@ function operate(firstNumber, secondNumber, operator) {
             return multiply(firstNumber, secondNumber);
         case '÷':
             return divide(firstNumber, secondNumber);
+    }
+}
+
+function updatePrimaryDisplay(value) {
+    primaryDisplay.textContent = Number(value).toLocaleString('en-US');
+}
+
+function updateSecondaryDisplay(firstNumber, secondNumber, operator) {
+    if (secondNumber) {
+        secondaryDisplay.textContent = `${firstNumber}${operator}${secondNumber}=`;
+    } else {
+        secondaryDisplay.textContent = `${firstNumber}${operator}`;
     }
 }
 
@@ -63,8 +63,38 @@ function updateNumbers(event) {
     }
 }
 
+function updateOperator(event) {
+    if (firstNumber !== '' && secondNumber !== '' && operator !== '') {
+        const result = operate(firstNumber, secondNumber, operator);
+
+        if (event.target.textContent !== '=') {
+            firstNumber = result.toString();
+            secondNumber = '';
+            operator = event.target.textContent;
+            updatePrimaryDisplay(result);
+            updateSecondaryDisplay(firstNumber, secondNumber, operator);
+        } else {
+            updatePrimaryDisplay(result);
+            updateSecondaryDisplay(firstNumber, secondNumber, operator);
+            firstNumber = result.toString();
+            secondNumber = '';
+        }
+    } else {
+        if (firstNumber === '' && secondNumber === '') {
+            firstNumber = '0';
+        }
+
+        operator = event.target.textContent;
+        updateSecondaryDisplay(firstNumber, secondNumber, operator);
+    }
+
+    digitCounter = 0;
+}
+
 const primaryDisplay = document.querySelector('.primary');
 const secondaryDisplay = document.querySelector('.secondary');
 const digits = document.querySelectorAll('.digit');
+const operators = document.querySelectorAll('.operator');
 
 digits.forEach(digit => digit.addEventListener('click', updateNumbers));
+operators.forEach(operator => operator.addEventListener('click', updateOperator));
