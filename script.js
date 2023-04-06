@@ -11,7 +11,11 @@ function multiply(firstNumber, secondNumber) {
 }
 
 function divide(firstNumber, secondNumber) {
-    return firstNumber / secondNumber;
+    if (isFinite(firstNumber / secondNumber)) {
+        return firstNumber / secondNumber;
+    } else {
+        return 'Division by 0';
+    }
 }
 
 function operate(firstNumber, secondNumber, operator) {
