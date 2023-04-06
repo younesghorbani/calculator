@@ -18,6 +18,18 @@ function divide(firstNumber, secondNumber) {
     }
 }
 
+function updatePrimaryDisplay(value) {
+    primaryDisplay.textContent = Number(value).toLocaleString('en-US');
+}
+
+function updateSecondaryDisplay(firstNumber, secondNumber, operator) {
+    if (secondNumber) {
+        secondaryDisplay.textContent = `${firstNumber}${operator}${secondNumber}=`;
+    } else {
+        secondaryDisplay.textContent = `${firstNumber}${operator}`;
+    }
+}
+
 function operate(firstNumber, secondNumber, operator) {
     switch (operator) {
         case '+':
@@ -30,3 +42,6 @@ function operate(firstNumber, secondNumber, operator) {
             return divide(firstNumber, secondNumber);
     }
 }
+
+const primaryDisplay = document.querySelector('.primary');
+const secondaryDisplay = document.querySelector('.secondary');
