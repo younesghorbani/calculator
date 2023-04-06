@@ -43,5 +43,28 @@ function operate(firstNumber, secondNumber, operator) {
     }
 }
 
+let firstNumber = secondNumber = '';
+let operator = '';
+let digitCounter = 0;
+
+function updateNumbers(event) {
+    if (!operator) {
+        if (digitCounter < 10) {
+            firstNumber += event.target.textContent;
+            updatePrimaryDisplay(firstNumber);
+            digitCounter++;
+        }
+    } else {
+        if (digitCounter < 10) {
+            secondNumber += event.target.textContent;
+            updatePrimaryDisplay(secondNumber);
+            digitCounter++;
+        }
+    }
+}
+
 const primaryDisplay = document.querySelector('.primary');
 const secondaryDisplay = document.querySelector('.secondary');
+const digits = document.querySelectorAll('.digit');
+
+digits.forEach(digit => digit.addEventListener('click', updateNumbers));
