@@ -48,17 +48,35 @@ let operator = '';
 let digitCounter = 0;
 
 function updateNumbers(event) {
-    if (!operator) {
-        if (digitCounter < 10) {
-            firstNumber += event.target.textContent;
-            updatePrimaryDisplay(firstNumber);
-            digitCounter++;
+    if (event.target.className === 'key digit') {
+        if (!operator) {
+            if (digitCounter < 10) {
+                firstNumber += event.target.textContent;
+                updatePrimaryDisplay(firstNumber);
+                digitCounter++;
+            }
+        } else {
+            if (digitCounter < 10) {
+                secondNumber += event.target.textContent;
+                updatePrimaryDisplay(secondNumber);
+                digitCounter++;
+            }
         }
-    } else {
-        if (digitCounter < 10) {
-            secondNumber += event.target.textContent;
-            updatePrimaryDisplay(secondNumber);
-            digitCounter++;
+    }
+
+    if (event.target.id === 'backspace') {
+        if (!operator) {
+            if (digitCounter > 0) {
+                firstNumber = firstNumber.slice(0, -1);
+                updatePrimaryDisplay(firstNumber);
+                digitCounter--;
+            }
+        } else {
+            if (digitCounter > 0) {
+                secondNumber = secondNumber.slice(0, -1);
+                updatePrimaryDisplay(secondNumber);
+                digitCounter--;
+            }
         }
     }
 }
@@ -93,8 +111,10 @@ function updateOperator(event) {
 
 const primaryDisplay = document.querySelector('.primary');
 const secondaryDisplay = document.querySelector('.secondary');
+const backspace = document.querySelector('#backspace');
 const digits = document.querySelectorAll('.digit');
 const operators = document.querySelectorAll('.operator');
 
+backspace.addEventListener('click', updateNumbers);
 digits.forEach(digit => digit.addEventListener('click', updateNumbers));
 operators.forEach(operator => operator.addEventListener('click', updateOperator));
