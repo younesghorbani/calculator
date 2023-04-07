@@ -1,3 +1,13 @@
+let firstNumber, secondNumber;
+let operator;
+
+function resetCalculator() {
+    firstNumber = secondNumber = '';
+    operator = '';
+    updatePrimaryDisplay('0');
+    updateSecondaryDisplay(firstNumber, secondNumber, operator);
+}
+
 function add(firstNumber, secondNumber) {
     return +firstNumber + +secondNumber;
 }
@@ -43,8 +53,6 @@ function updateSecondaryDisplay(firstNumber, secondNumber, operator) {
     }
 }
 
-let firstNumber = secondNumber = '';
-let operator = '';
 let digitCounter = 0;
 
 function updateNumbers(event) {
@@ -111,10 +119,13 @@ function updateOperator(event) {
 
 const primaryDisplay = document.querySelector('.primary');
 const secondaryDisplay = document.querySelector('.secondary');
+const clear = document.querySelector('#clear');
 const backspace = document.querySelector('#backspace');
 const digits = document.querySelectorAll('.digit');
 const operators = document.querySelectorAll('.operator');
 
+window.addEventListener('load', resetCalculator);
+clear.addEventListener('click', resetCalculator);
 backspace.addEventListener('click', updateNumbers);
 digits.forEach(digit => digit.addEventListener('click', updateNumbers));
 operators.forEach(operator => operator.addEventListener('click', updateOperator));
