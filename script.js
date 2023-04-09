@@ -1,9 +1,11 @@
 let firstNumber, secondNumber;
 let operator;
+let digitCounter;
 
 function resetCalculator() {
     firstNumber = secondNumber = '';
     operator = '';
+    digitCounter = 0;
     updatePrimaryDisplay('0');
     updateSecondaryDisplay(firstNumber, secondNumber, operator);
 }
@@ -42,7 +44,23 @@ function operate(firstNumber, secondNumber, operator) {
 }
 
 function updatePrimaryDisplay(value) {
-    primaryDisplay.textContent = Number(value).toLocaleString('en-US');
+    if (typeof value !== 'string') {
+        value = value.toString();
+    }
+
+    if (value.includes('.')) {
+        const positionOfDecimalPoint = value.indexOf('.');
+        const integerPart = value.slice(0, positionOfDecimalPoint);
+        const decimalPart = value.slice(positionOfDecimalPoint + 1);
+
+        if (decimalPart) {
+            primaryDisplay.textContent = Number(integerPart).toLocaleString('en-US') + '.' + decimalPart;
+        } else {
+            primaryDisplay.textContent = Number(integerPart).toLocaleString('en-US') + '.';
+        }
+    } else {
+        primaryDisplay.textContent = Number(value).toLocaleString('en-US');
+    }
 }
 
 function updateSecondaryDisplay(firstNumber, secondNumber, operator) {
@@ -52,8 +70,6 @@ function updateSecondaryDisplay(firstNumber, secondNumber, operator) {
         secondaryDisplay.textContent = `${firstNumber}${operator}`;
     }
 }
-
-let digitCounter = 0;
 
 function updateNumbers(event) {
     if (event.target.className === 'key digit') {
@@ -72,18 +88,39 @@ function updateNumbers(event) {
         }
     }
 
+    let digit;
     if (event.target.id === 'backspace') {
         if (!operator) {
-            if (digitCounter > 0) {
+            if (firstNumber.length > 0) {
+                digit = firstNumber.charAt(firstNumber.length - 1);
                 firstNumber = firstNumber.slice(0, -1);
                 updatePrimaryDisplay(firstNumber);
-                digitCounter--;
+                if (digit !== '.') {
+                    digitCounter--;
+                }
             }
         } else {
-            if (digitCounter > 0) {
+            if (secondNumber.length > 0) {
+                digit = firstNumber.charAt(secondNumber.length - 1);
                 secondNumber = secondNumber.slice(0, -1);
                 updatePrimaryDisplay(secondNumber);
-                digitCounter--;
+                if (digit !== '.') {
+                    digitCounter--;
+                }
+            }
+        }
+    }
+
+    if (event.target.id === 'decimal') {
+        if (!operator) {
+            if (!firstNumber.includes('.') && digitCounter < 10) {
+                firstNumber += '.';
+                updatePrimaryDisplay(firstNumber);
+            }
+        } else {
+            if (!secondNumber.includes('.') && digitCounter < 10) {
+                secondNumber += '.';
+                updatePrimaryDisplay(secondNumber);
             }
         }
     }
@@ -121,11 +158,13 @@ const primaryDisplay = document.querySelector('.primary');
 const secondaryDisplay = document.querySelector('.secondary');
 const clear = document.querySelector('#clear');
 const backspace = document.querySelector('#backspace');
+const decimalPoint = document.querySelector('#decimal');
 const digits = document.querySelectorAll('.digit');
 const operators = document.querySelectorAll('.operator');
 
 window.addEventListener('load', resetCalculator);
 clear.addEventListener('click', resetCalculator);
 backspace.addEventListener('click', updateNumbers);
+decimalPoint.addEventListener('click', updateNumbers);
 digits.forEach(digit => digit.addEventListener('click', updateNumbers));
 operators.forEach(operator => operator.addEventListener('click', updateOperator));
