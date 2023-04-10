@@ -113,15 +113,25 @@ function updateNumbers(event) {
 
     if (event.target.id === 'decimal') {
         if (!operator) {
+            if (!firstNumber) {
+                firstNumber = '0' + '.';
+            }
+
             if (!firstNumber.includes('.') && digitCounter < 10) {
                 firstNumber += '.';
-                updatePrimaryDisplay(firstNumber);
             }
+            
+            updatePrimaryDisplay(firstNumber);
         } else {
+            if (!secondNumber) {
+                secondNumber = '0' + '.';
+            }
+
             if (!secondNumber.includes('.') && digitCounter < 10) {
                 secondNumber += '.';
-                updatePrimaryDisplay(secondNumber);
             }
+
+            updatePrimaryDisplay(secondNumber);
         }
     }
 
