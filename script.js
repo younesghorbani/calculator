@@ -124,6 +124,20 @@ function updateNumbers(event) {
             }
         }
     }
+
+    if (event.target.id === 'percent') {
+        if (operator && operator !== '=') {
+            if (secondNumber) {
+                secondNumber = secondNumber / 100;
+                updatePrimaryDisplay(secondNumber);
+            } else {
+                secondNumber = firstNumber / 100;
+                updatePrimaryDisplay(secondNumber);
+            }
+        } else {
+            resetCalculator();
+        }
+    }
 }
 
 function updateOperator(event) {
@@ -159,6 +173,7 @@ const secondaryDisplay = document.querySelector('.secondary');
 const clear = document.querySelector('#clear');
 const backspace = document.querySelector('#backspace');
 const decimalPoint = document.querySelector('#decimal');
+const percent = document.querySelector('#percent');
 const digits = document.querySelectorAll('.digit');
 const operators = document.querySelectorAll('.operator');
 
@@ -166,5 +181,6 @@ window.addEventListener('load', resetCalculator);
 clear.addEventListener('click', resetCalculator);
 backspace.addEventListener('click', updateNumbers);
 decimalPoint.addEventListener('click', updateNumbers);
+percent.addEventListener('click', updateNumbers);
 digits.forEach(digit => digit.addEventListener('click', updateNumbers));
 operators.forEach(operator => operator.addEventListener('click', updateOperator));
