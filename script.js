@@ -138,6 +138,20 @@ function updateNumbers(event) {
             resetCalculator();
         }
     }
+
+    if (event.target.id === 'sign') {
+        if (!operator) {
+            if (firstNumber) {
+                firstNumber = -firstNumber;
+                updatePrimaryDisplay(firstNumber);
+            }
+        } else {
+            if (secondNumber) {
+                secondNumber = -secondNumber;
+                updatePrimaryDisplay(secondNumber);
+            }
+        }
+    }
 }
 
 function updateOperator(event) {
@@ -174,6 +188,7 @@ const clear = document.querySelector('#clear');
 const backspace = document.querySelector('#backspace');
 const decimalPoint = document.querySelector('#decimal');
 const percent = document.querySelector('#percent');
+const sign = document.querySelector('#sign');
 const digits = document.querySelectorAll('.digit');
 const operators = document.querySelectorAll('.operator');
 
@@ -182,5 +197,6 @@ clear.addEventListener('click', resetCalculator);
 backspace.addEventListener('click', updateNumbers);
 decimalPoint.addEventListener('click', updateNumbers);
 percent.addEventListener('click', updateNumbers);
+sign.addEventListener('click', updateNumbers);
 digits.forEach(digit => digit.addEventListener('click', updateNumbers));
 operators.forEach(operator => operator.addEventListener('click', updateOperator));
