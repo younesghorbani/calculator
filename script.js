@@ -23,11 +23,7 @@ function multiply(firstNumber, secondNumber) {
 }
 
 function divide(firstNumber, secondNumber) {
-    if (isFinite(firstNumber / secondNumber)) {
-        return firstNumber / secondNumber;
-    } else {
-        return 'Division by 0';
-    }
+    return firstNumber / secondNumber;
 }
 
 function operate(firstNumber, secondNumber, operator) {
@@ -44,22 +40,26 @@ function operate(firstNumber, secondNumber, operator) {
 }
 
 function updatePrimaryDisplay(value) {
-    if (typeof value !== 'string') {
-        value = value.toString();
-    }
-
-    if (value.includes('.')) {
-        const positionOfDecimalPoint = value.indexOf('.');
-        const integerPart = value.slice(0, positionOfDecimalPoint);
-        const decimalPart = value.slice(positionOfDecimalPoint + 1);
-
-        if (decimalPart) {
-            primaryDisplay.textContent = Number(integerPart).toLocaleString('en-US') + '.' + decimalPart;
-        } else {
-            primaryDisplay.textContent = Number(integerPart).toLocaleString('en-US') + '.';
-        }
+    if (!isFinite(value)) {
+        primaryDisplay.textContent = 'Division by 0';
     } else {
-        primaryDisplay.textContent = Number(value).toLocaleString('en-US');
+        if (isFinite(value) && typeof value !== 'string') {
+            value = value.toString();
+        }
+    
+        if (value.includes('.')) {
+            const positionOfDecimalPoint = value.indexOf('.');
+            const integerPart = value.slice(0, positionOfDecimalPoint);
+            const decimalPart = value.slice(positionOfDecimalPoint + 1);
+    
+            if (decimalPart) {
+                primaryDisplay.textContent = Number(integerPart).toLocaleString('en-US') + '.' + decimalPart;
+            } else {
+                primaryDisplay.textContent = Number(integerPart).toLocaleString('en-US') + '.';
+            }
+        } else {
+            primaryDisplay.textContent = Number(value).toLocaleString('en-US');
+        }
     }
 }
 
@@ -168,17 +168,22 @@ function updateOperator(event) {
     if (firstNumber !== '' && secondNumber !== '' && operator !== '') {
         const result = operate(firstNumber, secondNumber, operator);
 
-        if (event.target.textContent !== '=') {
-            firstNumber = result.toString();
-            secondNumber = '';
-            operator = event.target.textContent;
+        if (!isFinite(result)) {
+            resetCalculator();
             updatePrimaryDisplay(result);
-            updateSecondaryDisplay(firstNumber, secondNumber, operator);
         } else {
-            updatePrimaryDisplay(result);
-            updateSecondaryDisplay(firstNumber, secondNumber, operator);
-            firstNumber = result.toString();
-            secondNumber = '';
+            if (event.target.textContent !== '=') {
+                firstNumber = result.toString();
+                secondNumber = '';
+                operator = event.target.textContent;
+                updatePrimaryDisplay(result);
+                updateSecondaryDisplay(firstNumber, secondNumber, operator);
+            } else {
+                updatePrimaryDisplay(result);
+                updateSecondaryDisplay(firstNumber, secondNumber, operator);
+                firstNumber = result.toString();
+                secondNumber = '';
+            }
         }
     } else {
         if (firstNumber === '' && secondNumber === '') {
