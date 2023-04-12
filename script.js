@@ -23,7 +23,11 @@ function multiply(firstNumber, secondNumber) {
 }
 
 function divide(firstNumber, secondNumber) {
-    return firstNumber / secondNumber;
+    if (secondNumber === '0') {
+        return 'Division by 0';
+    } else {
+        return firstNumber / secondNumber;
+    }
 }
 
 function operate(firstNumber, secondNumber, operator) {
@@ -41,11 +45,9 @@ function operate(firstNumber, secondNumber, operator) {
 
 function updatePrimaryDisplay(value) {
     if (!isFinite(value)) {
-        primaryDisplay.textContent = 'Division by 0';
+        primaryDisplay.textContent = value;
     } else {
-        if (isFinite(value) && typeof value !== 'string') {
-            value = value.toString();
-        }
+        value = value.toString();
     
         if (value.includes('.')) {
             const positionOfDecimalPoint = value.indexOf('.');
@@ -114,7 +116,7 @@ function updateNumbers(event) {
     if (event.target.id === 'decimal') {
         if (!operator) {
             if (!firstNumber) {
-                firstNumber = '0' + '.';
+                firstNumber = '0.';
             }
 
             if (!firstNumber.includes('.') && digitCounter < 10) {
@@ -124,7 +126,7 @@ function updateNumbers(event) {
             updatePrimaryDisplay(firstNumber);
         } else {
             if (!secondNumber) {
-                secondNumber = '0' + '.';
+                secondNumber = '0.';
             }
 
             if (!secondNumber.includes('.') && digitCounter < 10) {
