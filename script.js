@@ -10,6 +10,36 @@ function resetCalculator() {
     updateSecondaryDisplay(firstNumber, secondNumber, operator);
 }
 
+function round(number) {
+    let stringNumber = number.toString();
+
+    if (stringNumber.charAt(0) === '-') {
+        stringNumber = stringNumber.slice(1);
+    }
+
+    if (Number.isInteger(number)) {
+        if (stringNumber.length > 10) {
+            if (number < 0) {
+                return Number(number.toString().slice(0, 11));
+            } else {
+                return Number(number.toString().slice(0, 10));
+            }
+        } else {
+            return number;
+        }
+    } else {
+        if (stringNumber.length > 11) {
+            const integerPart = stringNumber.slice(0, stringNumber.indexOf('.'));
+            const lengthOfIntegerPart = integerPart.length;
+            const decimalPart = stringNumber.slice(stringNumber.indexOf('.') + 1);
+
+            return parseFloat(`${integerPart}.${decimalPart.slice(0, 10 - lengthOfIntegerPart)}`);
+        } else {
+            return number;
+        }
+    }
+}
+
 function add(firstNumber, secondNumber) {
     return +firstNumber + +secondNumber;
 }
@@ -117,6 +147,7 @@ function updateNumbers(event) {
         if (!operator) {
             if (!firstNumber) {
                 firstNumber = '0.';
+                digitCounter = 1;
             }
 
             if (!firstNumber.includes('.') && digitCounter < 10) {
@@ -127,6 +158,7 @@ function updateNumbers(event) {
         } else {
             if (!secondNumber) {
                 secondNumber = '0.';
+                digitCounter = 1;
             }
 
             if (!secondNumber.includes('.') && digitCounter < 10) {
@@ -168,7 +200,7 @@ function updateNumbers(event) {
 
 function updateOperator(event) {
     if (firstNumber !== '' && secondNumber !== '' && operator !== '') {
-        const result = operate(firstNumber, secondNumber, operator);
+        const result = round(operate(firstNumber, secondNumber, operator));
 
         if (!isFinite(result)) {
             resetCalculator();
