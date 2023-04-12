@@ -11,6 +11,10 @@ function resetCalculator() {
 }
 
 function round(number) {
+    if (typeof number === 'string') {
+        return number;
+    }
+    
     let stringNumber = number.toString();
 
     if (stringNumber.charAt(0) === '-') {
