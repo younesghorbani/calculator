@@ -202,34 +202,65 @@ function updateNumbers(event) {
     }
 }
 
+let fakeSecondNumber = '';
 function updateOperator(event) {
-    if (firstNumber !== '' && secondNumber !== '' && operator !== '') {
-        const result = round(operate(firstNumber, secondNumber, operator));
+    let result;
 
-        if (!isFinite(result)) {
-            resetCalculator();
-            updatePrimaryDisplay(result);
-        } else {
-            if (event.target.textContent !== '=') {
+    if (event.target.textContent !== '=') {
+        if (firstNumber === '') {
+            firstNumber = '0';
+        }
+
+        updateSecondaryDisplay(firstNumber, secondNumber, event.target.textContent);
+        fakeSecondNumber = firstNumber;
+
+        if (firstNumber !== '' && secondNumber !== '') {
+            result = round(operate(firstNumber, secondNumber, operator));
+
+            if (typeof result === 'string') {
+                resetCalculator();
+                updatePrimaryDisplay(result);
+            } else {
                 firstNumber = result.toString();
                 secondNumber = '';
-                operator = event.target.textContent;
                 updatePrimaryDisplay(result);
+                operator = event.target.textContent;
                 updateSecondaryDisplay(firstNumber, secondNumber, operator);
+            }
+        }
+        
+        operator = event.target.textContent;
+    } else {
+        if (firstNumber !== '' && secondNumber !== '') {
+            result = round(operate(firstNumber, secondNumber, operator));
+
+            if (typeof result === 'string') {
+                resetCalculator();
+                updatePrimaryDisplay(result);
             } else {
                 updatePrimaryDisplay(result);
                 updateSecondaryDisplay(firstNumber, secondNumber, operator);
                 firstNumber = result.toString();
                 secondNumber = '';
+                operator = event.target.textContent;
             }
         }
-    } else {
-        if (firstNumber === '' && secondNumber === '') {
-            firstNumber = '0';
-        }
 
-        operator = event.target.textContent;
-        updateSecondaryDisplay(firstNumber, secondNumber, operator);
+        if (firstNumber !== '') {
+            if (secondNumber !== '') {
+                secondNumber = '';
+            }
+
+            if (fakeSecondNumber === '') {
+                fakeSecondNumber = firstNumber;
+            }
+
+            result = round(operate(firstNumber, fakeSecondNumber, operator));
+
+            updatePrimaryDisplay(result);
+            updateSecondaryDisplay(firstNumber, fakeSecondNumber, operator);
+            firstNumber = result.toString();
+        }
     }
 
     digitCounter = 0;
