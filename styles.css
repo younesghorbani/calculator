@@ -35,6 +35,8 @@ main .display {
 
 .display .secondary {
     font-family: 'VT323', monospace;
+    font-size: 24px;
+    height: 25.6px;
 }
 
 .display .primary {
@@ -79,7 +81,7 @@ main .keys {
 }
 
 .keys #clear,
-.keys #delete {
+.keys #backspace {
     background-color: #d21f3c;
 }
 
