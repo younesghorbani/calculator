@@ -44,6 +44,7 @@ main .display {
     color: #14a76c;
     border-bottom: 1px solid rgba(255, 101, 47, 0.2);
     text-align: right;
+    user-select: none;
 }
 
 .display .secondary {
