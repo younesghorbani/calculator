@@ -10,6 +10,25 @@ function resetCalculator() {
     updateSecondaryDisplay(firstNumber, secondNumber, operator);
 }
 
+function handleKeyboard(event) {
+    let key = event.key;
+
+    // Prevents Quick Find from being activated in Firefox
+    if (event.key === '/') {
+        event.preventDefault();
+    }
+
+    if (event.key === 'Enter') key = '=';
+
+    const selectedKey = document.querySelector(`div[data-key='${key}']`);
+
+    selectedKey.style.filter = 'brightness(130%)';
+    setTimeout(() => selectedKey.removeAttribute('style'), 200);
+
+    selectedKey.click();
+}
+
+// To prevent screen overflow
 function round(number) {
     if (typeof number === 'string') {
         return number;
@@ -78,7 +97,7 @@ function operate(firstNumber, secondNumber, operator) {
 }
 
 function updatePrimaryDisplay(value) {
-    if (!isFinite(value)) {
+    if (isNaN(value)) {
         primaryDisplay.textContent = value;
     } else {
         value = value.toString();
@@ -206,6 +225,7 @@ let fakeSecondNumber = '';
 function updateOperator(event) {
     let result;
 
+    // In a situation with the pattern: {operator}
     if (event.target.textContent !== '=') {
         if (firstNumber === '') {
             firstNumber = '0';
@@ -214,6 +234,7 @@ function updateOperator(event) {
         updateSecondaryDisplay(firstNumber, secondNumber, event.target.textContent);
         fakeSecondNumber = firstNumber;
 
+        // In a situation with the pattern: {firstNumber}{operator}{secondNumber}{operator}
         if (firstNumber !== '' && secondNumber !== '') {
             result = round(operate(firstNumber, secondNumber, operator));
 
@@ -222,6 +243,7 @@ function updateOperator(event) {
                 updatePrimaryDisplay(result);
             } else {
                 firstNumber = result.toString();
+                fakeSecondNumber = result.toString();
                 secondNumber = '';
                 updatePrimaryDisplay(result);
                 operator = event.target.textContent;
@@ -230,7 +252,7 @@ function updateOperator(event) {
         }
         
         operator = event.target.textContent;
-    } else {
+    } else {// In a situation with the pattern: {firstNumber}{operator}{secondNumber}=
         if (firstNumber !== '' && secondNumber !== '') {
             result = round(operate(firstNumber, secondNumber, operator));
 
@@ -246,7 +268,8 @@ function updateOperator(event) {
             }
         }
 
-        if (firstNumber !== '') {
+        // In a situation with the pattern: {firstNumber}{operator}=
+        if (firstNumber !== '' && operator !== '=') {
             if (secondNumber !== '') {
                 secondNumber = '';
             }
@@ -277,6 +300,7 @@ const digits = document.querySelectorAll('.digit');
 const operators = document.querySelectorAll('.operator');
 
 window.addEventListener('load', resetCalculator);
+window.addEventListener('keydown', handleKeyboard);
 clear.addEventListener('click', resetCalculator);
 backspace.addEventListener('click', updateNumbers);
 decimalPoint.addEventListener('click', updateNumbers);
