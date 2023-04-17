@@ -28,7 +28,7 @@ function handleKeyboard(event) {
     selectedKey.click();
 }
 
-// To prevent screen overflow
+// To prevent the calculator display from overflowing
 function round(number) {
     if (typeof number === 'string') {
         return number;
@@ -56,7 +56,15 @@ function round(number) {
             const lengthOfIntegerPart = integerPart.length;
             const decimalPart = stringNumber.slice(stringNumber.indexOf('.') + 1);
 
-            return parseFloat(`${integerPart}.${decimalPart.slice(0, 10 - lengthOfIntegerPart)}`);
+            if (lengthOfIntegerPart >= 10) {
+                if (number < 0) {
+                    return Number(number.toString().slice(0, 11));
+                } else {
+                    return Number(number.toString().slice(0, 10));
+                }
+            } else {
+                return parseFloat(`${integerPart}.${decimalPart.slice(0, 10 - lengthOfIntegerPart)}`);
+            }
         } else {
             return number;
         }
