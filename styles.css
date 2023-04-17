@@ -74,6 +74,7 @@ main .keys {
     background-color: #747474;
     color: #fff;
     border-radius: 50%;
+    user-select: none;
     transition: all 0.2s ease;
 }
 
@@ -84,10 +85,6 @@ main .keys {
 
 .keys .key:active {
     scale: 0.95;
-}
-
-.keys .key::selection {
-    background-color: transparent;
 }
 
 .keys .operator {
