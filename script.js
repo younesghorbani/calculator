@@ -1,3 +1,5 @@
+const DISPLAY_CAPACITY = 10;
+
 let firstNumber, secondNumber;
 let operator;
 let digitCounter;
@@ -28,49 +30,6 @@ function handleKeyboard(event) {
     selectedKey.click();
 }
 
-// To prevent the calculator display from overflowing
-function round(number) {
-    if (typeof number === 'string') {
-        return number;
-    }
-    
-    let stringNumber = number.toString();
-
-    if (stringNumber.charAt(0) === '-') {
-        stringNumber = stringNumber.slice(1);
-    }
-
-    if (Number.isInteger(number)) {
-        if (stringNumber.length > 10) {
-            if (number < 0) {
-                return Number(number.toString().slice(0, 11));
-            } else {
-                return Number(number.toString().slice(0, 10));
-            }
-        } else {
-            return number;
-        }
-    } else {
-        if (stringNumber.length > 11) {
-            const integerPart = stringNumber.slice(0, stringNumber.indexOf('.'));
-            const lengthOfIntegerPart = integerPart.length;
-            const decimalPart = stringNumber.slice(stringNumber.indexOf('.') + 1);
-
-            if (lengthOfIntegerPart >= 10) {
-                if (number < 0) {
-                    return Number(number.toString().slice(0, 11));
-                } else {
-                    return Number(number.toString().slice(0, 10));
-                }
-            } else {
-                return parseFloat(`${integerPart}.${decimalPart.slice(0, 10 - lengthOfIntegerPart)}`);
-            }
-        } else {
-            return number;
-        }
-    }
-}
-
 function add(firstNumber, secondNumber) {
     return +firstNumber + +secondNumber;
 }
@@ -84,7 +43,7 @@ function multiply(firstNumber, secondNumber) {
 }
 
 function divide(firstNumber, secondNumber) {
-    if (secondNumber === '0') {
+    if (Number.parseFloat(secondNumber) === 0) {
         return 'Division by 0';
     } else {
         return firstNumber / secondNumber;
@@ -105,45 +64,70 @@ function operate(firstNumber, secondNumber, operator) {
 }
 
 function updatePrimaryDisplay(value) {
-    if (isNaN(value)) {
+    if (!isFinite(value)) {
         primaryDisplay.textContent = value;
     } else {
-        value = value.toString();
-    
-        if (value.includes('.')) {
-            const positionOfDecimalPoint = value.indexOf('.');
-            const integerPart = value.slice(0, positionOfDecimalPoint);
-            const decimalPart = value.slice(positionOfDecimalPoint + 1);
-    
-            if (decimalPart) {
-                primaryDisplay.textContent = Number(integerPart).toLocaleString('en-US') + '.' + decimalPart;
-            } else {
-                primaryDisplay.textContent = Number(integerPart).toLocaleString('en-US') + '.';
-            }
+        let stringNumber = value.toString();
+        let trimedNumber = stringNumber;
+
+        if (trimedNumber.includes('-')) {
+            trimedNumber = trimedNumber.slice(1);
+        }
+
+        if (trimedNumber.includes('.')) {
+            trimedNumber = trimedNumber.replace('.', '');
+        }
+
+        if (trimedNumber.length > DISPLAY_CAPACITY) {
+            primaryDisplay.textContent = Number.parseFloat(
+                value.toLocaleString('en-US')).toExponential(2);
         } else {
-            primaryDisplay.textContent = Number(value).toLocaleString('en-US');
+            if (stringNumber.includes('.')) {
+                const positionOfDecimalPoint = stringNumber.indexOf('.');
+                const integerPart = stringNumber.slice(0, positionOfDecimalPoint);
+                const decimalPart = stringNumber.slice(positionOfDecimalPoint + 1);
+        
+                if (decimalPart) {
+                    primaryDisplay.textContent = Number.parseInt(
+                        integerPart).toLocaleString('en-US') + '.' + decimalPart;
+                } else {
+                    primaryDisplay.textContent = Number.parseInt(
+                        integerPart).toLocaleString('en-US') + '.';
+                }
+            } else {
+                primaryDisplay.textContent = Number.parseInt(value).toLocaleString('en-US');
+            }
         }
     }
 }
 
 function updateSecondaryDisplay(firstNumber, secondNumber, operator) {
+    if (firstNumber === '0.') {
+        firstNumber = '0';
+        updatePrimaryDisplay(firstNumber);
+    }
+
+    if (firstNumber.length > DISPLAY_CAPACITY) {
+        firstNumber = Number.parseFloat(firstNumber).toExponential(2);
+    }
+
     if (secondNumber) {
-        secondaryDisplay.textContent = `${firstNumber}${operator}${secondNumber}=`;
+        secondaryDisplay.textContent = `${firstNumber} ${operator} ${secondNumber} =`;
     } else {
-        secondaryDisplay.textContent = `${firstNumber}${operator}`;
+        secondaryDisplay.textContent = `${firstNumber} ${operator}`;
     }
 }
 
 function updateNumbers(event) {
     if (event.target.className === 'key digit') {
         if (!operator) {
-            if (digitCounter < 10) {
+            if (digitCounter < DISPLAY_CAPACITY) {
                 firstNumber += event.target.textContent;
                 updatePrimaryDisplay(firstNumber);
                 digitCounter++;
             }
         } else {
-            if (digitCounter < 10) {
+            if (digitCounter < DISPLAY_CAPACITY) {
                 secondNumber += event.target.textContent;
                 updatePrimaryDisplay(secondNumber);
                 digitCounter++;
@@ -181,7 +165,7 @@ function updateNumbers(event) {
                 digitCounter = 1;
             }
 
-            if (!firstNumber.includes('.') && digitCounter < 10) {
+            if (!firstNumber.includes('.') && digitCounter < DISPLAY_CAPACITY) {
                 firstNumber += '.';
             }
             
@@ -192,7 +176,7 @@ function updateNumbers(event) {
                 digitCounter = 1;
             }
 
-            if (!secondNumber.includes('.') && digitCounter < 10) {
+            if (!secondNumber.includes('.') && digitCounter < DISPLAY_CAPACITY) {
                 secondNumber += '.';
             }
 
@@ -235,18 +219,19 @@ function updateOperator(event) {
 
     // In a situation with the pattern: {operator}
     if (event.target.textContent !== '=') {
-        if (firstNumber === '') {
+        if (!firstNumber) {
             firstNumber = '0';
+            updatePrimaryDisplay(firstNumber);
         }
 
         updateSecondaryDisplay(firstNumber, secondNumber, event.target.textContent);
         fakeSecondNumber = firstNumber;
 
         // In a situation with the pattern: {firstNumber}{operator}{secondNumber}{operator}
-        if (firstNumber !== '' && secondNumber !== '') {
-            result = round(operate(firstNumber, secondNumber, operator));
+        if (firstNumber && secondNumber) {
+            result = operate(firstNumber, secondNumber, operator);
 
-            if (typeof result === 'string') {
+            if (!isFinite(result)) {
                 resetCalculator();
                 updatePrimaryDisplay(result);
             } else {
@@ -261,10 +246,10 @@ function updateOperator(event) {
         
         operator = event.target.textContent;
     } else {// In a situation with the pattern: {firstNumber}{operator}{secondNumber}=
-        if (firstNumber !== '' && secondNumber !== '') {
-            result = round(operate(firstNumber, secondNumber, operator));
+        if (firstNumber && secondNumber) {
+            result = operate(firstNumber, secondNumber, operator);
 
-            if (typeof result === 'string') {
+            if (!isFinite(result)) {
                 resetCalculator();
                 updatePrimaryDisplay(result);
             } else {
@@ -277,20 +262,25 @@ function updateOperator(event) {
         }
 
         // In a situation with the pattern: {firstNumber}{operator}=
-        if (firstNumber !== '' && operator !== '=') {
-            if (secondNumber !== '') {
+        if (firstNumber && operator !== '=') {
+            if (secondNumber) {
                 secondNumber = '';
             }
 
-            if (fakeSecondNumber === '') {
+            if (!fakeSecondNumber) {
                 fakeSecondNumber = firstNumber;
             }
 
-            result = round(operate(firstNumber, fakeSecondNumber, operator));
+            result = operate(firstNumber, fakeSecondNumber, operator);
 
-            updatePrimaryDisplay(result);
-            updateSecondaryDisplay(firstNumber, fakeSecondNumber, operator);
-            firstNumber = result.toString();
+            if (!isFinite(result)) {
+                resetCalculator();
+                updatePrimaryDisplay(result);
+            } else {
+                updatePrimaryDisplay(result);
+                updateSecondaryDisplay(firstNumber, fakeSecondNumber, operator);
+                firstNumber = result.toString();
+            }
         }
     }
 
